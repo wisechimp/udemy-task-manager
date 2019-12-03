@@ -81,9 +81,7 @@ router.patch('/users/me', auth, async (req, res) => {
 
 // Route for deleting a user
 router.delete('/users/me', auth, async (req, res) => {
-  const _id = req.user._id
-
-  try {
+    try {
     // const user = await User.findByIdAndDelete(_id)
     //
     // if (!user) {
@@ -91,10 +89,10 @@ router.delete('/users/me', auth, async (req, res) => {
     // }
 
     // Achieves the same as the commented out block above
-    await req.user.remove
-    res.send(user)
+    await req.user.remove()
+    res.send(req.user)
   } catch (e) {
-    res.status(500).send(e)
+    res.status(500).send('Eh what\'s up with deleting this?')
   }
 })
 
