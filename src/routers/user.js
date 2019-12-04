@@ -121,6 +121,23 @@ router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) 
   res.status(400).send({ error: error.message })
 })
 
+// Route for fetching a user's avatar
+router.get('/users/:id/avatar', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+
+    if (!user || !user.avatar) {
+      throw new Error('Uh oh')
+    }
+
+    res.set('Content-Type', 'image/png')
+    res.send(user.avatar)
+
+  } catch (e) {
+    res.status(404).send(e)
+  }
+})
+
 // Route for deleting the user's avatar
 router.delete('/users/me/avatar', auth, async (req, res) => {
   req.user.avatar = undefined
