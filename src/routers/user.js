@@ -82,7 +82,7 @@ router.patch('/users/me', auth, async (req, res) => {
 
 // Route for deleting a user
 router.delete('/users/me', auth, async (req, res) => {
-    try {
+  try {
     // const user = await User.findByIdAndDelete(_id)
     //
     // if (!user) {
@@ -97,13 +97,14 @@ router.delete('/users/me', auth, async (req, res) => {
   }
 })
 
+// Function for uploading an avatar. Limiting the file size to 1MB plus a filter
+// to ensure an image file
 const upload = multer({
-  dest: 'avatars',
   limits: {
     fileSize: 1000000
   },
   fileFilter(req, file, callback) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$)) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
       return callback(new Error('File must be a .jpg, .jpeg or .png'))
     }
 
@@ -111,8 +112,13 @@ const upload = multer({
   }
 })
 
-router.post('/users/me/avatar', upload.single('avatar'), (req, res) => {
+// Route for uploading an profile picture
+router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
+  req.user.avatar = req.file.buffer
+  await req.user.save()
   res.send()
+}, (error, req, res, next) => {
+  res.status(400).send({ error: error.message })
 })
 
 module.exports = router
