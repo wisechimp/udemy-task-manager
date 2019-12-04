@@ -5,6 +5,7 @@ const sharp = require('sharp')
 
 const User = require('../models/user')
 const auth = require('../middleware/auth')
+const { sendWelcomeEmail, sendFarewellEmail } = require('../emails/account')
 
 // Route for creating a user
 router.post('/users', async (req, res) => {
@@ -12,6 +13,7 @@ router.post('/users', async (req, res) => {
 
   try {
     await user.save()
+    sendWelcomeEmail(user.email, user.name)
     const token = await user.generateAuthToken()
     res.status(201).send({ user, token })
   } catch (e) {
@@ -92,6 +94,7 @@ router.delete('/users/me', auth, async (req, res) => {
 
     // Achieves the same as the commented out block above
     await req.user.remove()
+    sendFarewellEmail(req.user.email, req.user.name)
     res.send(req.user)
   } catch (e) {
     res.status(500).send('Eh what\'s up with deleting this?')
