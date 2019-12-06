@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
-    "develop": "nodemon src/index.js"
+    "develop": "nodemon src/index.js",
+    "test": "jest --verbose --watch"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +27,8 @@
     "validator": "^12.1.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.1"
+    "jest": "^24.9.0",
+    "nodemon": "^2.0.1",
+    "supertest": "^4.0.2"
   }
 }
