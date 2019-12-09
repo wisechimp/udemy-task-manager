@@ -5,6 +5,11 @@ const Task = require('../src/models/task')
 const {
   userOneId,
   userOne,
+  userTwoId,
+  userTwo,
+  taskOne,
+  taskTwo,
+  taskThree,
   setupDatabase
 } = require('./fixtures/db')
 
@@ -26,4 +31,29 @@ test('Should create task for user', async () => {
     const task = await Task.findById(response.body._id)
     expect(task).not.toBeNull()
     expect(task.completed).toEqual(false)
+})
+
+// Assert that a user only fetches their tasks and the communication with
+// the database is OK (200)
+test('Should fetch a user\'s tasks', async () => {
+  const response = await request(app)
+    .get('/tasks')
+    .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+    .send()
+    .expect(200)
+
+  expect(response.body.length).toEqual(2)
+})
+
+// Check that a user cannot delete someone else's tasks and cannot in
+// fact even see it (404)
+test('Should not delete someone else\'s task', async () => {
+  const response = await request(app)
+    .delete(`/tasks/${taskOne._id}`)
+    .set('Authorization', `Bearer ${userTwo.tokens[0].token}`)
+    .send()
+    .expect(404)
+
+  const task = await Task.findById(taskOne._id)
+  expect(task).not.toBeNull()
 })
