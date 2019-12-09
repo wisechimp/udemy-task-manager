@@ -1,30 +1,15 @@
 const request = require('supertest')
-const jwt = require('jsonwebtoken')
-const mongoose = require('mongoose')
-require('dotenv').config({ path: '.env.test' })
 
 const app = require('../src/app')
 const User = require('../src/models/user')
-
-const userOneId = new mongoose.Types.ObjectId()
-console.log(userOneId)
-
-// Test data for a test user
-const userOne = {
-  _id: userOneId,
-  name: 'Stereo Mike',
-  email: 'mike@example.com',
-  password: '56what??',
-  tokens: [{
-    token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET)
-  }]
-}
+const {
+  userOneId,
+  userOne,
+  setupDatabase
+} = require('./fixtures/db')
 
 // Clean the database and create the dummy user between each test
-beforeEach(async () => {
-  await User.deleteMany()
-  await new User(userOne).save()
-})
+beforeEach(setupDatabase)
 
 // Assert that a new user is being signed up correctly by returning
 // a 201 (created)
