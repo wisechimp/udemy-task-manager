@@ -9,6 +9,7 @@ const User = require('../src/models/user')
 const userOneId = new mongoose.Types.ObjectId()
 console.log(userOneId)
 
+// Test data for a test user
 const userOne = {
   _id: userOneId,
   name: 'Stereo Mike',
@@ -19,11 +20,14 @@ const userOne = {
   }]
 }
 
+// Clean the database and create the dummy user between each test
 beforeEach(async () => {
   await User.deleteMany()
   await new User(userOne).save()
 })
 
+// Assert that a new user is being signed up correctly by returning
+// a 201 (created)
 test('Should sign up a new user', async () => {
   await request(app)
     .post('/users')
@@ -35,6 +39,8 @@ test('Should sign up a new user', async () => {
     .expect(201)
 })
 
+// Assert that the dummy user is being signed up correctly by returning
+// a 200 (OK)
 test('Should login an existing user', async () => {
   await request(app).post('/users/login').send({
     email: userOne.email,
@@ -42,6 +48,8 @@ test('Should login an existing user', async () => {
   }).expect(200)
 })
 
+// Assert that incorrect user details fail to access the database by
+// returning a 400 (Bad request)
 test('Should not login a non existant user', async () => {
   await request(app).post('/users/login').send({
     email: 'Todd',
@@ -49,6 +57,8 @@ test('Should not login a non existant user', async () => {
   }).expect(400)
 })
 
+// Assert that a user who has logged in can collect his personal data by
+// returning a 200 (OK)
 test('Should get user profile', async () => {
   await request(app)
     .get('/users/me')
@@ -57,6 +67,8 @@ test('Should get user profile', async () => {
     .expect(200)
 })
 
+// Assert that an unregistered user cannot return user information by
+// returning a 401 (unauthorised)
 test('Should not get profile for unauthenticated user', async () => {
   await request(app)
     .get('/users/me')
@@ -64,6 +76,8 @@ test('Should not get profile for unauthenticated user', async () => {
     .expect(401)
 })
 
+// Assert that a registered logged in user can delete their profile by
+// returning a 200 (OK)
 test('Should delete user profile', async () => {
   await request(app)
     .delete('/users/me')
@@ -72,6 +86,8 @@ test('Should delete user profile', async () => {
     .expect(200)
 })
 
+// Asserting that an unregistered user cannot delete by returning
+// a 401 (unauthorised)
 test('Should not delete if unauthenticated user', async () => {
   await request(app)
     .get('/users/me')
